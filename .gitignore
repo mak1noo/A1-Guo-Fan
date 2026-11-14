@@ -1,0 +1,7 @@
+build/
+.build-*/
+.javadoc-*/
+*.class
+*.zip
+.vscode/
+src - 副本/
