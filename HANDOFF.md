@@ -19,6 +19,21 @@ GitHub：https://github.com/mak1noo/A1-mak1noo
 本项目不是完整应用，不包含 UI、登录、数据库、文件保存、菜单或用户输入。
 全部演示都位于 `AssignmentOne.main()`。
 
+## 本地源码来源
+
+按项目所有者说明，真实代码工作副本是：
+
+```text
+C:\Users\1\Desktop\学习\OOP\A1-mak1noo\src - 副本
+```
+
+根目录 `src` 同时用于本地 WakaTime 工作流。为避免破坏现有 WakaTime 配置，
+没有重命名或移动这两个目录。上传前已从 `src - 副本` 直接编译和运行，并逐文件
+校验它与仓库中 `src` 的 10 个 Java 文件 SHA-256 完全一致。
+
+以后修改真实代码时，应先更新 `src - 副本`，再同步到仓库的 `src`，最后分别从
+真实副本和仓库源码重新编译、运行并提交。
+
 ## 源码清单
 
 源码目录：`C:\Users\1\Desktop\学习\OOP\A1-mak1noo\src`
@@ -42,8 +57,9 @@ GitHub：https://github.com/mak1noo/A1-mak1noo
 - Part 6 分别成功演示按患者手机号、专业人员 ID 和患者姓名取消预约。
 - Part 6 增加 17:00 非法时间错误路径。
 - `Patient` 先去除手机号两端空白再校验，保持输入校验顺序一致。
+- 已确认最终源码来自真实工作副本 `src - 副本`，并同步到仓库 `src`。
 - `.gitignore` 排除 `build/`、临时构建目录、`.class`、`.zip`、`.vscode/`
-  和 `src - 副本/`，避免误传本地文件。
+  和 `src - 副本/`，避免把同一份源码重复提交。
 - README、DESIGN 和 HANDOFF 已同步当前目录、演示路径和私有仓库信息。
 
 ## 白名单约束
