@@ -8,15 +8,18 @@ A1-mak1noo/
 |-- HANDOFF.md
 |-- src/
 |   |-- AssignmentOne.java
-|   |-- ClinicSchedule.java
-|   |-- HealthProfessional.java
-|   |-- GeneralPractitioner.java
-|   |-- Specialist.java
-|   |-- Nurse.java
-|   |-- Surgeon.java
-|   |-- Patient.java
 |   |-- Appointment.java
-|   `-- AppointmentManager.java
+|   |-- AppointmentManager.java
+|   |-- ClinicSchedule.java
+|   |-- GeneralPractitioner.java
+|   |-- HealthProfessional.java
+|   |-- Nurse.java
+|   |-- Patient.java
+|   |-- Specialist.java
+|   |-- Surgeon.java
+|   `-- TimeSlot.java
+|-- test/
+|   `-- OopContractCheck.java
 |-- DESIGN.md
 `-- README.md
 ```
@@ -27,17 +30,49 @@ A1-mak1noo/
 
 ```powershell
 New-Item -ItemType Directory -Force -Path .\build | Out-Null
-javac -Xlint:all -d .\build (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName })
+javac -Xlint:all -Werror -d .\build (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName })
 java -cp .\build AssignmentOne
 ```
 
-## 时间槽设置
+运行本地契约检查：
 
-`ClinicSchedule` 使用 `static final String` 保存星期名称与时间槽，并用私有
-`ArrayList` 作为校验来源。当前按作业字面要求包含 `08:00` 到 `16:00`。
+```powershell
+javac -Xlint:all -Werror -d .\build (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName }) .\test\OopContractCheck.java
+java -cp .\build OopContractCheck
+```
 
-如果老师明确说明 `16:00` 只是关门时间，只需从 `createDailySlots()` 中删除
-`SLOT_16_00`，其他类不需要修改。
+## 当前日与时间槽
+
+- `ClinicSchedule.CURRENT_DAY` 明确表示本次脚本模拟的当天，值为 `MONDAY`。
+- `AppointmentManager` 默认使用当前日，并且拒绝其他日期。
+- 诊所开放时间为 08:00 到 16:00。
+- 每 30 分钟一个槽位，最后一个可预约起点是 15:30。
+- 16:00 作为关门时间，不作为预约起点。
+- `TimeSlot` 使用小时和分钟保存时间，并按一天中的分钟数排序。
+
+## 患者手机号
+
+手机号允许输入空格和连字符，系统会先去除这些字符，再验证 10 位澳洲手机号
+格式。最终保存的号码是连续数字，例如：
+
+```text
+" 0412 345-678 " -> "0412345678"
+```
+
+## 电话取消规则
+
+- `cancelAppointmentByPhone(mobile)` 仅使用手机号取消。
+- 手机号只对应一条预约时，直接取消。
+- 手机号对应多条预约时，返回警告并要求提供时间。
+- `cancelAppointmentByPhone(mobile, timeSlot)` 用于解决多条预约歧义。
+
+## Javadoc
+
+公共类、公共方法、受保护方法和公共常量均提供简短英文 Javadoc。最终验证使用：
+
+```powershell
+javadoc -Xdoclint:all -quiet -d .\build\docs (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName })
+```
 
 ## 私有仓库
 

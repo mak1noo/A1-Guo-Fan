@@ -1,22 +1,23 @@
-# 医院预约管理系统：类设计与提交指南
+# 医院预约管理系统：最终类设计与评分依据
 
-> 说明：作业 PDF 规定不得使用 GenAI 代写解决方案代码或注释。本文件和 `src`
-> 目录是参考实现，不应未经改写直接作为个人作品提交。
+> 作业 PDF 规定不能使用 GenAI 代写解决方案代码、代码注释或视频内容。本文档
+> 是设计参考，提交前必须遵守课程规则并确保能够独立解释全部实现。
 
-## 1. 类清单与职责表
+## 1. 类清单与职责
 
-| 类 | 职责 | 对应 Part | 与其他类的关系 |
-|---|---|---|---|
-| `AssignmentOne` | 编写 `main`，演示 Part 3 与 Part 6 | Part 3、6 | 创建并依赖所有领域类 |
-| `ClinicSchedule` | 保存星期名称、固定时间槽与合法性校验 | Part 1、4、5 | 被专业人员、预约和管理器使用 |
-| `HealthProfessional` | 抽象基类，保存共有信息并规定统一行为 | Part 1、2 | 被四个具体类型继承；实现 `Comparable<HealthProfessional>` |
-| `GeneralPractitioner` | 保存执照号，执行处方行为 | Part 2 | 继承 `HealthProfessional` |
-| `Specialist` | 保存专科名称，执行转诊行为 | Part 2 | 继承 `HealthProfessional` |
-| `Nurse` | 保存护理单元，执行采血行为 | Part 2 | 继承 `HealthProfessional` |
-| `Surgeon` | 保存手术室，执行排手术行为 | Part 2 | 继承 `HealthProfessional` |
-| `Patient` | 保存并校验患者姓名和手机号 | Part 4 | 被 `Appointment` 组合 |
-| `Appointment` | 组合患者、任意专业人员和一个时间字符串 | Part 4 | 实现 `Comparable<Appointment>` |
-| `AppointmentManager` | 管理预约集合、冲突、过滤、排序与取消 | Part 5、6 | 聚合 `ArrayList<Appointment>` |
+| 类 | 职责 | 对应 Part |
+|---|---|---|
+| `AssignmentOne` | 运行 Part 3、Part 6 脚本演示 | 3、6 |
+| `HealthProfessional` | 抽象基类、公共字段、校验、比较和相等性 | 1、2 |
+| `GeneralPractitioner` | GP 特有字段、处方行为 | 2 |
+| `Specialist` | 专科字段、转诊行为 | 2 |
+| `Nurse` | 护理单元、采血行为 | 2 |
+| `Surgeon` | 手术室、排手术行为 | 2 |
+| `Patient` | 姓名、手机号规范化和格式校验 | 4 |
+| `TimeSlot` | 小时/分钟时间值、格式输出和自然排序 | 4 |
+| `ClinicSchedule` | 模拟当前日、08:00–15:30 固定日程 | 4、5 |
+| `Appointment` | 组合患者、任意专业人员和有效时间 | 4 |
+| `AppointmentManager` | 添加、冲突、过滤、排序和取消 | 5、6 |
 
 ## 2. 文字版类图
 
@@ -32,248 +33,195 @@ HealthProfessional has-a ArrayList<String> availableDays
 
 Appointment has-a Patient
 Appointment has-a HealthProfessional
-Appointment has-a String timeSlot
+Appointment has-a TimeSlot
 Appointment ..|> Comparable<Appointment>
 
+TimeSlot ..|> Comparable<TimeSlot>
+ClinicSchedule has-a ArrayList<TimeSlot> dailySlots
 AppointmentManager has-a ArrayList<Appointment>
-AppointmentManager has-a String clinicDay
-
-ClinicSchedule ..> HealthProfessional
-ClinicSchedule ..> Appointment
-ClinicSchedule ..> AppointmentManager
+AppointmentManager has-a currentDay
 
 AssignmentOne ..> AppointmentManager
-AssignmentOne ..> all concrete health professional types
+AssignmentOne ..> all concrete professional types
 ```
 
-关系重点：
+## 3. 关键设计
 
-- 四个具体专业人员与基类之间是 is-a 继承关系。
-- `Appointment` 与 `Patient`、`HealthProfessional` 之间是 has-a 组合关系。
-- `Appointment` 用 `String` 保存受 `ClinicSchedule` 校验的时间值。
-- `AppointmentManager` 聚合预约集合。
-- 两个类实现 `Comparable`，全量排序和过滤后排序都调用
-  `Collections.sort()`。
+### HealthProfessional
 
-## 3. 字段、构造器与方法设计
+- `id`、`name`、`availableDays` 均为 `private final`。
+- ID 必须是纯数字，姓名不能为空。
+- 上班日会 trim、转大写、校验并去重。
+- `getAvailableDays()` 返回副本。
+- 两个 protected 构造器支持完整日程和周一至周五默认日程。
+- 两个抽象方法要求子类提供角色和职责。
+- `equals()` 和 `hashCode()` 按 ID 保持契约一致。
+- `Comparable<HealthProfessional>` 按 ID 排序。
 
-### 3.1 字段表
+### TimeSlot
 
-| 类 | 字段 | 类型 | 可见性 | final | 设计理由 |
-|---|---|---|---|---|---|
-| `ClinicSchedule` | 星期名称 | `String` | `public static final` | 是 | 提供统一、可读的星期常量 |
-| `ClinicSchedule` | 时间槽名称 | `String` | `public static final` | 是 | 避免在多个类中重复输入时间文本 |
-| `ClinicSchedule` | `VALID_DAYS` | `ArrayList<String>` | `private static final` | 是 | 保存允许的星期名称供统一校验 |
-| `ClinicSchedule` | `DAILY_SLOTS` | `ArrayList<String>` | `private static final` | 是 | 保存固定日程供统一校验 |
-| `HealthProfessional` | `id` | `String` | `private final` | 是 | 身份字段，必须是纯数字 |
-| `HealthProfessional` | `name` | `String` | `private final` | 是 | 防止外部绕过封装修改姓名 |
-| `HealthProfessional` | `availableDays` | `ArrayList<String>` | `private final` | 是 | 保存受控上班日集合 |
-| `GeneralPractitioner` | `medicalLicenceNumber` | `String` | `private final` | 是 | 保存该类型特有信息 |
-| `Specialist` | `specialty` | `String` | `private final` | 是 | 保存专科信息 |
-| `Nurse` | `nursingUnit` | `String` | `private final` | 是 | 保存护理单元信息 |
-| `Surgeon` | `operatingTheatre` | `String` | `private final` | 是 | 保存手术室信息 |
-| `Patient` | `name` | `String` | `private final` | 是 | 保存并保护患者姓名 |
-| `Patient` | `mobile` | `String` | `private final` | 是 | 保存并保护已校验手机号 |
-| `Appointment` | `patient` | `Patient` | `private final` | 是 | 预约必须关联一个患者 |
-| `Appointment` | `healthProfessional` | `HealthProfessional` | `private final` | 是 | 使用父类型接收任意专业人员 |
-| `Appointment` | `timeSlot` | `String` | `private final` | 是 | 保存已校验的固定时间文本 |
-| `AppointmentManager` | `appointments` | `ArrayList<Appointment>` | `private final` | 是 | 管理器独占预约集合 |
-| `AppointmentManager` | `clinicDay` | `String` | `private final` | 是 | 保存当前诊所日 |
+- 不使用违规的高级时间 API。
+- `hour` 和 `minute` 都是 `private final`。
+- 小时范围 0–23，分钟只允许 0 或 30。
+- `compareTo()` 使用一天中的分钟数，不按字符串排序。
+- `equals()` 和 `hashCode()` 使用小时与分钟。
+- `toString()` 使用 `String.format()` 输出 `HH:mm`。
 
-### 3.2 构造器列表
+### ClinicSchedule
 
-| 类 | 构造器签名 | 可见性 | 理由 |
-|---|---|---|---|
-| `ClinicSchedule` | `ClinicSchedule()` | `private` | 该类只提供静态常量和方法，不需要实例 |
-| `HealthProfessional` | `(String id, String name, ArrayList<String> availableDays)` | `protected` | 子类调用全参构造器并完成共有状态初始化 |
-| `HealthProfessional` | `(String id, String name)` | `protected` | 提供周一至周五默认值 |
-| `GeneralPractitioner` | 三个参数版本 | `public` | 使用周一、三、五默认上班日 |
-| `GeneralPractitioner` | 加入 `ArrayList<String>` 的全参版本 | `public` | 允许自定义上班日 |
-| `Specialist` | 三个参数版本 | `public` | 使用周一至周五默认上班日 |
-| `Specialist` | 加入 `ArrayList<String>` 的全参版本 | `public` | 允许不同专科医生设置不同日程 |
-| `Nurse` | 三个参数版本 | `public` | 使用周一至周五默认上班日 |
-| `Nurse` | 加入 `ArrayList<String>` 的全参版本 | `public` | 支持轮班日程 |
-| `Surgeon` | 三个参数版本 | `public` | 使用周一、四、五默认手术日 |
-| `Surgeon` | 加入 `ArrayList<String>` 的全参版本 | `public` | 允许调整手术日 |
-| `Patient` | `(String name, String mobile)` | `public` | 创建时完成姓名和手机号校验 |
-| `Appointment` | `(Patient, HealthProfessional, String)` | `public` | 所有关联必须存在，时间必须属于固定日程 |
-| `AppointmentManager` | `(String clinicDay)` | `public` | 创建空预约集合并保存当前诊所日 |
+- `CURRENT_DAY` 明确表示模拟的当前日 `MONDAY`。
+- 从 08:00 循环生成到 16:00，但不包含终点。
+- 最后可预约时间是 15:30，共 16 个时间槽。
+- `getDailySlots()` 返回副本。
+- `Appointment` 和 Manager 共用同一份日程校验规则。
 
-### 3.3 主要方法
+### Patient
 
-| 类 | 方法 | 说明 |
-|---|---|---|
-| `ClinicSchedule` | `getValidDays()`、`getDailySlots()` | 返回新 `ArrayList`，避免外部修改内部数据 |
-| `ClinicSchedule` | `isValidDay(String)`、`isScheduledSlot(String)` | 统一验证星期与预约时间 |
-| `HealthProfessional` | `getId()`、`getName()` | 公共只读访问 |
-| `HealthProfessional` | `getAvailableDays()` | 返回上班日集合副本 |
-| `HealthProfessional` | `worksOn(String)` | 判断专业人员是否在指定日期上班 |
-| `HealthProfessional` | `getRoleDescription()` | 抽象方法，由具体类型提供角色 |
-| `HealthProfessional` | `performDuty()` | 抽象方法，由具体类型提供职责 |
-| `HealthProfessional` | `compareTo(HealthProfessional)` | 按 ID 实现自然排序 |
-| `HealthProfessional` | `equals(Object)`、`hashCode()` | 同一 ID 被视为同一专业人员；哈希值使用 `Objects.hash(id)` |
-| `HealthProfessional` | `toString()` | 输出公共信息 |
-| 四个子类 | 特有行为 | 处方、转诊、采血、排手术 |
-| 四个子类 | `getRoleDescription()`、`performDuty()`、`toString()` | 使用 `@Override`，并在 `toString()` 中复用 `super.toString()` |
-| `Patient` | `getName()`、`getMobile()`、`toString()` | 公共只读访问与完整输出 |
-| `Appointment` | 三个 getter、`compareTo()`、`toString()` | 只读关联、按时间自然排序、完整输出 |
-| `AppointmentManager` | `addAppointment(...)` | 检查必填值、固定时间、上班日和医生冲突 |
-| `AppointmentManager` | 三个取消方法 | 分别支持姓名加时间、手机号加时间、专业人员 ID 加时间 |
-| `AppointmentManager` | 五个 display 方法 | 显示全部、按医生过滤、按手机号过滤及过滤后排序 |
-| `AppointmentManager` | 私有查询、冲突和打印方法 | 对调用方隐藏实现细节 |
-| `AssignmentOne` | `main`、`printHeading` | 执行演示并统一标题格式 |
+- 姓名必须非空。
+- 手机号先移除空格和连字符，再校验 10 位并必须以 `04` 开头。
+- 规范化后的连续数字保存在 final 字段中。
+- `normalizeMobile()` 同时供取消和过滤使用，避免输入格式不一致。
 
-## 4. 概念落点表
+### Appointment
 
-| 白名单概念 | 代码落点 | 作用 |
-|---|---|---|
-| class / object | 所有领域类与 `main` 中创建的对象 | 用对象表示现实实体 |
-| encapsulation | 所有类的 `private` 字段和 `public` getter | 防止外部直接破坏状态 |
-| private fields + public getters | `HealthProfessional`、`Patient`、`Appointment`、`AppointmentManager` | 控制读写权限 |
-| constructor validation | `HealthProfessional`、`Patient`、`Appointment`、`AppointmentManager` | 在创建时拒绝无效状态 |
-| inheritance | 四个具体类型 `extends HealthProfessional` | 共用字段、校验和公共方法 |
-| composition | `Appointment` 持有 `Patient` 和 `HealthProfessional` | 表达预约的 has-a 关系 |
-| polymorphism | `ArrayList<HealthProfessional>` 的统一遍历 | 父类型变量处理不同子类对象 |
-| abstraction | `HealthProfessional` 抽象类和两个抽象方法 | 定义统一契约 |
-| abstract class / abstract method | `HealthProfessional` | 阻止创建没有具体角色的对象 |
-| interface / implements | `HealthProfessional` 和 `Appointment` 实现 `Comparable` | 使用排序能力契约 |
-| method overriding / @Override | 子类行为、`toString()`、`compareTo()` | 让具体类型提供自己的实现 |
-| dynamic binding | 循环调用 `getRoleDescription()` 与 `performDuty()` | 运行时根据真实对象类型调用方法 |
-| parent-type reference | `Appointment` 的 `HealthProfessional` 字段 | 让一个预约接受所有专业人员类型 |
-| `ArrayList<ParentType>` | `main` 中的 `ArrayList<HealthProfessional>` | 同时保存四种具体类型 |
-| `toString()` | 基类、子类、患者和预约 | 输出可读对象信息 |
-| `super.toString()` | 四个专业人员的 `toString()` | 复用基类公共格式 |
-| `equals()` / `hashCode()` | `HealthProfessional` | 按 ID 判断身份并保持契约一致 |
-| `Objects.hash(...)` | `HealthProfessional.hashCode()` | 生成与 ID 一致的哈希值 |
-| `instanceof` / casting | `HealthProfessional.equals()` | 完成类型检查和安全向下转换 |
-| constructor overloading | 基类与四个子类 | 同时支持默认和自定义上班日 |
-| `this(...)` | 四个子类构造器 | 在一个构造器中复用另一个构造器 |
-| `super(...)` | 四个子类构造器 | 初始化父类共有字段 |
-| `static final constants` | `ClinicSchedule` 的星期与时间常量 | 避免重复字符串 |
-| `ArrayList` | 上班日、专业人员、预约与过滤结果 | 课程范围内的有序集合 |
-| `Comparable<T>` | `HealthProfessional`、`Appointment` | 提供对象自然排序 |
-| simple collection sorting | `Collections.sort(...)` | 对全部预约和过滤子集排序 |
-| if / else / loop | 校验、冲突、查找、过滤 | 表达业务规则并遍历集合 |
-| String 与连接 | ID、姓名、手机号、时间、提示信息 | 满足当前数据模型 |
-| defensive copy | `getAvailableDays()`、`getAppointments()` 等 | 防止外部修改内部集合 |
-| IllegalArgumentException | 构造器中的非法 ID、手机号、日期、时间 | 在源头拒绝无效对象 |
-| helper methods | 输入校验、查询、过滤、打印 | 避免重复代码 |
+- 三个关联字段均不可为空且为 final。
+- `TimeSlot` 必须属于 `ClinicSchedule`。
+- `compareTo()` 先比时间，再以专业人员 ID 稳定排序。
+- `toString()` 输出时间、患者、专业人员角色、ID 和姓名，避免嵌套完整对象。
 
-## 5. Part 3 演示脚本
+### AppointmentManager
 
-1. 创建 3 个 `GeneralPractitioner`。
-2. 创建 2 个 `Specialist`。
-3. 创建 2 个 `Nurse`。
-4. 创建 1 个 `Surgeon`。
-5. 将全部对象加入 `ArrayList<HealthProfessional>`。
-6. 调用 `Collections.sort(professionals)`，按 ID 排序。
-7. 用普通 `for` 循环统一打印完整对象、角色和职责。
-8. 分别调用处方、转诊、采血与排手术行为。
-9. 创建同 ID 的临时 GP 引用，验证 `equals()` 与 `hashCode()`。
+- 无参构造器使用模拟当前日。
+- 带参构造器只接受当前日，其他日期直接拒绝。
+- `addAppointment()` 检查空值、固定时间、上班日和重复预约。
+- 过滤和排序都使用预约集合的副本。
+- `cancelAppointmentByPhone(mobile)` 提供 Brief 要求的单参数电话取消。
+- 多条预约匹配同一手机号时返回歧义警告。
+- `cancelAppointmentByPhone(mobile, timeSlot)` 解决多条预约歧义。
+- `cancelAppointmentByProfessional(id, timeSlot)` 是第二种规定取消方式。
+- `cancelAppointment(name, timeSlot)` 是补充能力。
+- 所有添加和取消操作都返回明确的 `SUCCESS` 或失败信息。
 
-每条输出的格式为：
+## 4. 概念落点
 
-```text
-序号. 完整对象信息
-   Role: 具体角色
-   Duty: 具体职责
-```
-
-## 6. Part 6 演示脚本
-
-| 情形 | 操作与预期输出 |
+| 概念 | 落点 |
 |---|---|
-| 建预约 | 每次成功输出 `SUCCESS: Appointment booked...` |
-| 显示全部 | 输出当前诊所日和全部预约 |
-| 按医生过滤 | 只输出指定专业人员 ID 的预约 |
-| 按患者过滤 | 只输出指定手机号的预约 |
-| 全部排序 | 使用 `Collections.sort()` 从 09:00 往后显示 |
-| 过滤后排序 | 对医生或患者子集再次调用 `Collections.sort()` |
-| 取消（手机号） | 用患者手机号和预约时间输出 `SUCCESS: Appointment cancelled...` |
-| 取消（专业人员 ID） | 用专业人员 ID 和预约时间输出 `SUCCESS: Appointment cancelled...` |
-| 取消（患者姓名，补充能力） | 用患者姓名和预约时间输出 `SUCCESS: Appointment cancelled...` |
-| 再次显示 | 被取消记录消失，编号重新连续，最终剩余 5 条预约 |
-| 冲突预约 | 输出 `Booking failed: ... already has an appointment...` |
-| 取消不存在 | 输出 `Cancellation failed: no appointment found...` |
-| 休息日预约 | 输出 `Booking failed: ... does not work on Monday.` |
-| 非法时间 | 输出 `Booking failed: 17:00 is not in the daily schedule.` |
+| 封装 | private final 字段、getter、集合副本 |
+| 构造器校验 | 专业人员、患者、时间、预约和 Manager |
+| 构造器重载 | `HealthProfessional`、四个子类、Manager |
+| `this(...)` | 子类构造器和 Manager 无参构造器 |
+| `super(...)` | 子类初始化共有字段 |
+| 抽象类/抽象方法 | `HealthProfessional` |
+| 继承 | 四个专业人员子类 |
+| 多态 | `ArrayList<HealthProfessional>` 统一遍历 |
+| 动态绑定 | `getRoleDescription()`、`performDuty()` |
+| `@Override` | `compareTo()`、`equals()`、`hashCode()`、`toString()` |
+| `super.toString()` | 四个子类复用基类格式 |
+| `equals()/hashCode()` | 专业人员按 ID，时间按小时/分钟 |
+| `Comparable` | 专业人员、预约、时间 |
+| `Collections.sort()` | 人员排序、全部和过滤后预约排序 |
+| `ArrayList` | 上班日、专业人员、时间槽、预约、过滤结果 |
+| `static final` | 当前日、星期、日程常量和固定字段 |
+| `String.format()` | TimeSlot 的 `HH:mm` 输出 |
+| `Arrays` 替代项 | 本项目统一使用 `ArrayList` 和集合副本 |
+| `if/switch/循环` | 校验、冲突、过滤、取消和日程生成 |
 
-八种必需情形全部覆盖，并额外展示三种取消搜索键、16:00 边界预约、
-手机号过滤、子集排序、休息日错误和非法时间错误。
+## 5. Part 3 演示
 
-## 7. HD 自检清单
+1. 创建 3 个 GP。
+2. 创建 2 个 Specialist。
+3. 创建 2 个 Nurse。
+4. 创建 1 个 Surgeon。
+5. 放入 `ArrayList<HealthProfessional>`。
+6. 使用 `Collections.sort()` 按 ID 排序。
+7. 用普通 for 循环统一打印对象、角色和职责。
+8. 分别调用处方、转诊、采血和排手术行为。
+9. 用相同 ID 的两个 GP 对象验证 `equals()` 和 `hashCode()`。
 
-PDF 评分表有 8 个评分行：Part 1–6、视频和专业实践。
+## 6. Part 6 演示
 
-| 评分项 | 检查点 |
+| 场景 | 结果 |
 |---|---|
-| Part 1，10% | 抽象基类保存并校验 ID、姓名、上班日；包含构造器重载和完整 `toString()` |
-| Part 2，20% | 四个具体类型均有特有字段、行为和完整输出；基类不可直接创建 |
-| Part 3，10% | 使用父类型 `ArrayList` 统一遍历；动态绑定展示多态 |
-| Part 4，15% | 患者独立建模；预约接受任意专业人员；关联字段不可变 |
-| Part 5，15% | 固定日程、上班日检查、冲突检查、过滤、排序、取消与警告消息全部实现 |
-| Part 6，10% | 正常与错误案例完整，取消前后输出清楚 |
-| 视频，10% | 四支柱各有至少两个可指认位置和设计理由 |
-| 专业实践，10% | 真实 GitHub 进度、WakaTime 报告、英文 Javadoc、清晰命名与一致格式 |
+| 当前日 | 输出 `Clinic day: MONDAY` |
+| 日程 | 输出 08:00 到 15:30 的 16 个槽 |
+| 添加 | 输出 `SUCCESS: Appointment booked...` |
+| 显示全部 | 输出完整预约摘要 |
+| 过滤 | 按专业人员 ID 和手机号过滤 |
+| 排序 | 全部和过滤子集都按 TimeSlot 时间排序 |
+| 电话单条取消 | 直接输出成功信息 |
+| 电话多条取消 | 输出 `Cancellation failed: multiple appointments...` |
+| 精确电话取消 | 手机号加时间成功取消 |
+| 专业人员取消 | 专业人员 ID 加时间成功取消 |
+| 姓名取消 | 姓名加时间成功取消 |
+| 重复预约 | 输出冲突警告 |
+| 取消不存在 | 输出三种 no appointment found 警告 |
+| 休息日预约 | 输出专业人员当天不上班 |
+| 16:00 | 输出 `Booking failed: 16:00 is not in the daily schedule.` |
+| 最终数量 | 3 条预约 |
 
-## 8. GitHub 提交主题建议
+## 7. HD 评分自检
 
-1. 初始化项目和 `AssignmentOne`
-2. 建立固定诊所日程常量与校验
-3. 完成健康专业人员抽象基类
-4. 补充构造器重载和只读访问
-5. 完成 GP 特化
-6. 完成其余三个专业人员类型
-7. 完成父类型集合、多态与排序
-8. 完成 Patient 和 Appointment
-9. 完成添加、上班日与冲突检查
-10. 完成过滤、排序和三种取消方式
-11. 完成 Part 6 正常与错误演示
-12. 整理 Javadoc、格式和最终自查
+| 评分项 | 证据 |
+|---|---|
+| Part 1，10% | 抽象基类、数字 ID、只读访问、构造器重载、比较和相等性 |
+| Part 2，20% | GP、Specialist、Nurse、Surgeon 四个类型，各有特有字段和行为 |
+| Part 3，10% | 父类型集合、多态循环、类型特有行为演示 |
+| Part 4，15% | Patient、TimeSlot、Appointment 和日程成员校验 |
+| Part 5，15% | 固定日程、当天限制、冲突、过滤、排序、两种规定取消方式 |
+| Part 6，10% | 正常路径、三种取消入口、重复、休息日、16:00 和不存在取消 |
+| 视频，10% | 四支柱都能指到具体代码并解释设计理由 |
+| 专业实践，10% | Javadoc 零警告、`-Xlint:all -Werror`、契约测试、GitHub、WakaTime |
 
-必须按真实开发过程提交。
+## 8. GitHub 提交主题
 
-## 9. 视频四支柱指认点
+1. 建立基础项目
+2. 完成抽象专业人员基类
+3. 完成四个专业人员类型
+4. 完成 Part 3 多态演示
+5. 建立 Patient 与 TimeSlot
+6. 建立 Appointment
+7. 完成 Manager 添加与冲突
+8. 完成过滤和排序
+9. 完成电话与专业人员取消
+10. 增加契约测试
+11. 完成 Javadoc
+12. 最终清理与 ZIP
+
+## 9. 视频指认点
 
 ### Encapsulation
 
-- `HealthProfessional` 的私有 final 字段与公共 getter。
-- `getAvailableDays()` 和 `getAppointments()` 返回集合副本。
-- `Patient` 在构造器中校验手机号。
-
-### Inheritance
-
-- 四个具体类 `extends HealthProfessional`。
-- 子类构造器通过 `super(...)` 初始化共有字段。
-- 子类 `toString()` 复用 `super.toString()`。
-
-### Polymorphism
-
-- `ArrayList<HealthProfessional>` 同时保存四种对象。
-- 同一个循环调用 `getRoleDescription()` 和 `performDuty()`。
-- `Appointment` 使用父类型字段接收任意专业人员。
+- 私有 final 字段与 getter。
+- 集合副本。
+- 构造器校验。
 
 ### Abstraction
 
-- `HealthProfessional` 是不能直接实例化的抽象类。
-- 两个抽象方法建立所有子类必须实现的统一契约。
-- `AppointmentManager` 用私有 helper 方法隐藏内部查找算法。
+- 抽象基类。
+- 两个抽象方法。
+- Manager 对当前日规则和冲突算法的封装。
 
-## 10. 新手易错点
+### Inheritance
 
-| 易错点 | 错在哪 | 自查方法 |
-|---|---|---|
-| `equals()` 与 `hashCode()` 不一致 | 相等规则使用 ID，哈希却使用姓名 | 两个同 ID 对象必须同时满足 `equals()` 为 true、哈希值相同 |
-| `super(...)` 位置错误 | 未放在子类构造器第一条语句 | 检查每个子类构造器开头 |
-| 重复写公共 `toString()` 内容 | 子类重复实现 ID、姓名和日期格式 | 先调用 `super.toString()` |
-| 时间用字符串却未校验 | 任意文本都可能进入预约 | 所有时间必须经过 `ClinicSchedule.isScheduledSlot()` |
-| getter 直接返回内部集合 | 外部可清空或添加非法元素 | 返回新的 `ArrayList` |
-| 冲突检查使用对象引用比较 | 不同对象即使同 ID 也可能被当成不同医生 | 使用重写后的 `equals()` |
-| 只在 `main` 中检查输入 | 其他调用路径仍可创建非法对象 | 把校验放在构造器或管理器入口 |
-| 排序逻辑写在多个 display 方法中 | 规则重复且容易不一致 | 统一依赖 `Appointment.compareTo()` 和 `Collections.sort()` |
+- `extends HealthProfessional`。
+- `super(...)`。
+- `super.toString()`。
 
-## 时间槽边界
+### Polymorphism
 
-当前日程按作业字面包含 `08:00` 到 `16:00`。如果老师说明 `16:00` 只是闭馆
-时间，只需从 `ClinicSchedule.createDailySlots()` 中删除 `SLOT_16_00`。其他
-类会自动使用更新后的日程。
+- `ArrayList<HealthProfessional>`。
+- 动态绑定两个抽象方法。
+- Appointment 使用父类型专业人员字段。
+
+## 10. 常见错误与自查
+
+| 错误 | 自查 |
+|---|---|
+| `equals()` 与 `hashCode()` 不一致 | 同 ID 对象必须相等且 hash 相同 |
+| `super(...)` 不在第一条语句 | 检查子类构造器 |
+| 时间按字符串排序 | 检查 `TimeSlot.compareTo()` 使用分钟数 |
+| 16:00 被当预约槽 | 检查日程循环使用 `< END_MINUTES` |
+| 手机号格式不一致 | 输入、过滤和取消都必须先规范化 |
+| 电话多条预约直接误删 | 检查歧义警告和精确重载 |
+| 非当前日可以创建 Manager | 检查带参构造器 |
+| getter 暴露内部集合 | 检查所有集合 getter 返回副本 |

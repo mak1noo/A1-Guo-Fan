@@ -1,107 +1,121 @@
-# PROG2004 Assessment 1 交接说明
+# PROG2004 Assessment 1 最终交接说明
 
-最后更新：2026-11-14
+最后更新：2026-11-15
 
 ## 当前状态
 
-本项目已完成 PROG2004 Assessment 1 的 Java 医院预约管理系统类骨架，并创建了
-独立私有 GitHub 仓库：
+项目目录：
 
 ```text
-本地目录：C:\Users\1\Desktop\学习\OOP\A1-mak1noo
-GitHub：https://github.com/mak1noo/A1-mak1noo
-可见性：Private
+C:\Users\1\Desktop\学习\OOP\A1-mak1noo
 ```
 
-目录名使用已验证的 GitHub 登录账号 `mak1noo`。如果学校 MySCU 用户名不同，提交前
-只需把目录、ZIP 文件名和 GitHub 仓库名同步改成 `A1-对应的MySCU用户名`。
-
-本项目不是完整应用，不包含 UI、登录、数据库、文件保存、菜单或用户输入。
-全部演示都位于 `AssignmentOne.main()`。
-
-## 本地源码来源
-
-按项目所有者说明，真实代码工作副本是：
+GitHub 私有仓库：
 
 ```text
-C:\Users\1\Desktop\学习\OOP\A1-mak1noo\src - 副本
+https://github.com/mak1noo/A1-mak1noo
 ```
 
-根目录 `src` 同时用于本地 WakaTime 工作流。为避免破坏现有 WakaTime 配置，
-没有重命名或移动这两个目录。上传前已从 `src - 副本` 直接编译和运行，并逐文件
-校验它与仓库中 `src` 的 10 个 Java 文件 SHA-256 完全一致。
+最终源码以唯一的 `src` 目录为准。之前出现的 `src - 副本` 已不存在，不应再按
+双目录同步流程操作。
 
-以后修改真实代码时，应先更新 `src - 副本`，再同步到仓库的 `src`，最后分别从
-真实副本和仓库源码重新编译、运行并提交。
+## 最终功能
 
-## 源码清单
+- 抽象健康专业人员基类。
+- GP、Specialist、Nurse、Surgeon 四个具体类型。
+- 父类型 `ArrayList`、普通循环和动态绑定。
+- 患者手机号规范化与格式校验。
+- `TimeSlot` 使用小时和分钟建模并按分钟数排序。
+- 模拟当前日为 `MONDAY`。
+- 08:00 到 16:00 的日程，最后可预约槽为 15:30。
+- 16:00 被明确视为关门时间。
+- 同一专业人员同时间冲突检查。
+- 按专业人员 ID 和患者手机号过滤。
+- 全部和过滤子集按时间排序。
+- 手机号单参数取消。
+- 多条手机号预约时返回歧义警告。
+- 手机号加时间的精确取消重载。
+- 专业人员 ID 加时间取消。
+- 患者姓名加时间取消。
+- 正常和错误案例完整演示。
 
-源码目录：`C:\Users\1\Desktop\学习\OOP\A1-mak1noo\src`
-
-| 文件 | 职责 |
-|---|---|
-| `AssignmentOne.java` | Part 3 与 Part 6 的主演示 |
-| `ClinicSchedule.java` | 星期、固定时间槽和合法性校验 |
-| `HealthProfessional.java` | 抽象基类、封装、比较、相等性 |
-| `GeneralPractitioner.java` | GP 子类和处方行为 |
-| `Specialist.java` | 专科医生子类和转诊行为 |
-| `Nurse.java` | 护士子类和采血行为 |
-| `Surgeon.java` | 外科医生子类和排手术行为 |
-| `Patient.java` | 患者姓名和手机号校验 |
-| `Appointment.java` | 患者、专业人员和时间的组合 |
-| `AppointmentManager.java` | 预约添加、冲突、过滤、排序和取消 |
-
-## 收尾时完成的修改
-
-- Part 6 增加 16:00 边界预约，证明固定日程包含 16:00。
-- Part 6 分别成功演示按患者手机号、专业人员 ID 和患者姓名取消预约。
-- Part 6 增加 17:00 非法时间错误路径。
-- `Patient` 先去除手机号两端空白再校验，保持输入校验顺序一致。
-- 已确认最终源码来自真实工作副本 `src - 副本`，并同步到仓库 `src`。
-- `.gitignore` 排除 `build/`、临时构建目录、`.class`、`.zip`、`.vscode/`
-  和 `src - 副本/`，避免把同一份源码重复提交。
-- README、DESIGN 和 HANDOFF 已同步当前目录、演示路径和私有仓库信息。
-
-## 白名单约束
-
-- 只使用 Module 1-3 中允许的 Java 概念。
-- 时间使用 `String` 常量配合 `ClinicSchedule` 校验。
-- 预约排序使用 `Comparable` 和 `Collections.sort()`。
-- 不使用 `enum`、独立 `Comparator`、`Stream`、`lambda`、`Optional`、
-  `record`、`Map`、文件 IO、`Scanner`、`java.time`、GUI 或第三方库。
-- 代码注释只使用简短英文 Javadoc 或必要的英文内联注释。
-
-## 验证命令
-
-在项目目录执行：
+## 最终验证
 
 ```powershell
 New-Item -ItemType Directory -Force -Path .\build | Out-Null
-javac -Xlint:all -d .\build (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName })
+javac -Xlint:all -Werror -d .\build (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName })
 java -cp .\build AssignmentOne
 ```
 
-最终验收通过标准：
+契约测试：
 
-- `javac -Xlint:all` 没有错误或警告。
-- Part 3 通过父类型 `ArrayList<HealthProfessional>` 统一展示 8 名专业人员。
-- Part 6 演示成功、冲突、休息日、非法时间和三种取消搜索键。
-- 最终剩余预约数为 5。
-- 白名单关键词扫描没有命中禁用概念。
+```powershell
+javac -Xlint:all -Werror -d .\build (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName }) .\test\OopContractCheck.java
+java -cp .\build OopContractCheck
+```
+
+Javadoc：
+
+```powershell
+javadoc -Xdoclint:all -quiet -d .\build\docs (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName })
+```
+
+已验证：
+
+- `javac -Xlint:all -Werror` 通过。
+- 契约测试输出 `CONTRACT CHECK PASSED`。
+- `javadoc -Xdoclint:all` 无警告。
+- 主程序正常和错误路径通过。
+- 最终剩余预约数为 3。
+- 白名单扫描通过。
+- 当前 `src` 没有 `.class` 文件。
+
+## 视频材料
+
+```text
+presentation/
+|-- output/PROG2004-A1-OOP-Presentation-v4.pptx
+`-- VIDEO_SCRIPT.md
+```
+
+PPT 共 9 页，含逐页 speaker notes。`VIDEO_SCRIPT.md` 是约 4 分 55 秒的参考
+口播稿。当前 PPT 已同步 `TimeSlot`、15:30 最后预约槽和手机号取消歧义规则。
+
+## 提交 ZIP
+
+提交前重新生成：
+
+```text
+C:\Users\1\Desktop\学习\OOP\A1-mak1noo.zip
+```
+
+ZIP 只应包含：
+
+- `src` 中的 11 个 Java 源文件
+- `README.md`
+- `DESIGN.md`
+- `HANDOFF.md`
+
+不能包含：
+
+- `A1-YinghaoLiu/`
+- `.git/`
+- `.vscode/`
+- `build/`
+- `.codex-finalizer/`
+- `.class`
+- 测试用构建文件
 
 ## 提交前剩余事项
 
-1. 如果 MySCU 用户名不是 `mak1noo`，同步修改目录名、ZIP 文件名和 GitHub 仓库名。
-2. 提交 WakaTime 报告，文件名为 `A1-username-WakaTime.[png/jpg/pdf]`。
-3. 录制不超过 5 分钟的四支柱 OOP 视频并上传到 SCU OneDrive。
-4. 根据实际使用情况在 Blackboard 评论中填写 GenAI declaration。
-5. 私有仓库如果要求评阅，邀请 tutor 和 unit assessor 为 collaborator。
+1. 确认 MySCU 用户名与 `mak1noo` 的关系，必要时同步目录、ZIP 和仓库名。
+2. 提交 WakaTime 报告。
+3. 录制不超过 5 分钟的视频并上传到 SCU OneDrive。
+4. 按实际使用情况填写 GenAI declaration。
+5. 如需评阅，邀请 tutor 和 unit assessor 加入私有仓库。
 
-## 重要限制
+## 学术诚信
 
-- 本仓库创建于 2026-11-14，无法补造评估周期内并不存在的历史提交。
-  不要为了看起来“进度丰富”而伪造提交时间或虚假的增量开发记录。
-- 作业 PDF 规定不能使用 GenAI 代写解决方案代码、代码注释或视频内容。
-  只有在确认代码符合课程规则、能够独立解释每一行且按实际情况完成声明后，
-  才能作为个人作品提交。
-- 不要把本项目推送到 `mak1noo/Dunbar-Veterinary-Clinic`。
+作业 PDF 规定不能使用 GenAI 代写解决方案代码、代码注释或视频内容。提交前应
+确保所有内容符合课程规则、能够独立解释每一行代码，并真实保留 GitHub 与
+WakaTime 记录。
