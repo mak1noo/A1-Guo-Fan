@@ -100,6 +100,11 @@ AssignmentOne ..> all concrete professional types
 
 - The no-argument constructor uses the simulated current day.
 - The overloaded constructor rejects any day other than the current day.
+- The manager stores an `ArrayList<TimeSlot>` schedule.
+- The default schedule comes from `ClinicSchedule.getDailySlots()`.
+- A custom-schedule constructor accepts a reduced or irregular list of slots.
+- Custom schedules reject null, duplicate, outside-hours and empty values.
+- `getSchedule()` returns a defensive copy.
 - `addAppointment()` checks null values, the fixed schedule, availability and
   double booking.
 - Filtering and sorting use copies of the appointment list.
@@ -159,6 +164,7 @@ AssignmentOne ..> all concrete professional types
 | Display all | Complete appointment summaries |
 | Filter | Professional ID and patient phone |
 | Sort | All and filtered lists ordered by `TimeSlot` |
+| Configurable schedule | A custom slot accepts a booking while an unconfigured slot is rejected |
 | Phone single match | Direct cancellation success |
 | Phone multiple matches | `Cancellation failed: multiple appointments...` |
 | Phone and time | Exact cancellation success |

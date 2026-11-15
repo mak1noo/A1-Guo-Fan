@@ -97,7 +97,8 @@ Visual: Presentation slide 7, then `Appointment.java`, `TimeSlot.java`,
 > minute of day. `ClinicSchedule` defines the simulated current day and creates
 > slots from 08:00 through 15:30. It treats 16:00 as closing time.
 > `AppointmentManager` checks the current day, schedule, availability, duplicate
-> bookings, filtering, sorting and cancellation.
+> bookings, filtering, sorting and cancellation. It also accepts a custom
+> `ArrayList<TimeSlot>` schedule while keeping the default schedule available.
 
 ## 4:00-4:35 | Demonstration and Error Cases
 
@@ -127,5 +128,5 @@ Visual: Presentation slide 9.
 - Explain the design reason for each example.
 - Show at least one successful run.
 - Be ready to explain `super`, `@Override`, `Comparable`, the duplicate-booking
-  rule and defensive copies.
+  rule, configurable schedules and defensive copies.
 - Upload the video to SCU OneDrive and confirm the sharing permission.

@@ -24,6 +24,12 @@
 - Rebuilt the presentation as English version v5.
 - Generated a submission ZIP without generated classes, tests or unrelated files.
 - Converted all submission-facing documentation and presentation content to English.
+- Added an `ArrayList<TimeSlot>` custom schedule constructor to the manager.
+- Added defensive schedule copies and validation for null, duplicate, empty
+  and outside-hours values.
+- Added a configurable-schedule demonstration to `AssignmentOne`.
+- Added contract checks for custom schedules, defensive copies and boundary
+  rejection.
 
 ## Verification Results
 

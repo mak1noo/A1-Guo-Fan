@@ -25,6 +25,8 @@ directory no longer exists, so no dual-directory synchronization is required.
 - Simulated current day set to `MONDAY`.
 - Schedule from 08:00 through 15:30.
 - 16:00 treated as the closing time.
+- Default or custom `ArrayList<TimeSlot>` schedules.
+- Custom schedules reject null, duplicate, empty and outside-hours values.
 - Double-booking prevention for the same professional and time.
 - Filtering by professional ID and patient mobile number.
 - Sorting for all appointments and filtered subsets.
@@ -64,6 +66,8 @@ Verified results:
 - Contract tests print `CONTRACT CHECK PASSED`.
 - `javadoc -Xdoclint:all` reports no warnings.
 - The complete normal and error demonstration runs successfully.
+- The custom-schedule demonstration accepts configured slots and rejects
+  unconfigured slots.
 - Three appointments remain at the end of the demonstration.
 - The Module 1-3 whitelist scan passes.
 - `src` contains no `.class` files.

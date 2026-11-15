@@ -57,6 +57,29 @@ java -cp .\build OopContractCheck
 - 16:00 is the closing time and not an appointment start time.
 - `TimeSlot` stores an hour and a minute and orders slots by minute of day.
 
+## Configurable Schedule
+
+The default manager uses all 16 standard slots. A clinic can also supply an
+`ArrayList<TimeSlot>` with a reduced or irregular schedule:
+
+```java
+ArrayList<TimeSlot> customSchedule = new ArrayList<TimeSlot>();
+customSchedule.add(new TimeSlot(9, 0));
+customSchedule.add(new TimeSlot(11, 0));
+customSchedule.add(new TimeSlot(14, 30));
+
+AppointmentManager manager = new AppointmentManager(customSchedule);
+```
+
+The custom schedule:
+
+- must contain at least one slot;
+- cannot contain null or duplicate times;
+- must stay inside the 08:00 to 16:00 opening period;
+- rejects 16:00 because the closing time is exclusive;
+- is copied and sorted by `TimeSlot`;
+- is returned only as a defensive copy from `getSchedule()`.
+
 ## Patient Mobile Numbers
 
 The system first removes spaces and hyphens from a supplied mobile number.
