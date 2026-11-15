@@ -125,7 +125,7 @@ public class AssignmentOne {
         System.out.println(manager.cancelAppointmentByPhone(
                 "0412345678", new TimeSlot(11, 0)));
         System.out.println(manager.cancelAppointmentByProfessional(
-                "2001", new TimeSlot(10, 30)));
+                "1002", new TimeSlot(9, 30)));
         System.out.println(manager.cancelAppointment(
                 "Zoe Taylor", new TimeSlot(10, 0)));
         manager.displayAll();
