@@ -77,7 +77,7 @@ javadoc -Xdoclint:all -quiet -d .\build\docs (Get-ChildItem -LiteralPath .\src -
 ## 私有仓库
 
 ```text
-https://github.com/mak1noo/A1-mak1noo
+https://github.com/mak1noo/A1-Guo-Fan
 ```
 
 ## 学术诚信

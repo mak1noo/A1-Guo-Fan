@@ -13,7 +13,7 @@ C:\Users\1\Desktop\学习\OOP\A1-mak1noo
 GitHub 私有仓库：
 
 ```text
-https://github.com/mak1noo/A1-mak1noo
+https://github.com/mak1noo/A1-Guo-Fan
 ```
 
 最终源码以唯一的 `src` 目录为准。之前出现的 `src - 副本` 已不存在，不应再按
