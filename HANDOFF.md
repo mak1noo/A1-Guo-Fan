@@ -95,6 +95,7 @@ ZIP 只应包含：
 - `README.md`
 - `DESIGN.md`
 - `HANDOFF.md`
+- `CHANGELOG.md`
 
 不能包含：
 

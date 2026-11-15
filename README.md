@@ -6,6 +6,7 @@
 A1-mak1noo/
 |-- .gitignore
 |-- HANDOFF.md
+|-- CHANGELOG.md
 |-- src/
 |   |-- AssignmentOne.java
 |   |-- Appointment.java
