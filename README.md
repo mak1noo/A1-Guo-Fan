@@ -1,4 +1,6 @@
-# PROG2004 Assessment 1 - Hospital Appointment System
+# A1-Guo Fan
+
+## PROG2004 Assessment 1 - Hospital Appointment System
 
 ## Student
 
@@ -7,7 +9,7 @@ MySCU username: Guo Fan
 ## Project structure
 
 ```text
-A1-Guo-Fan/
+A1-Guo Fan/
 |-- .gitignore
 |-- README.md
 `-- src/
