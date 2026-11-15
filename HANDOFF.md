@@ -1,122 +1,122 @@
-# PROG2004 Assessment 1 最终交接说明
+# PROG2004 Assessment 1 Final Handoff
 
-最后更新：2026-11-15
+Last updated: 2026-11-15
 
-## 当前状态
+## Current State
 
-项目目录：
+Project directory: `<workspace>/A1-mak1noo`
 
-```text
-C:\Users\1\Desktop\学习\OOP\A1-mak1noo
-```
-
-GitHub 私有仓库：
+Private GitHub repository:
 
 ```text
 https://github.com/mak1noo/A1-Guo-Fan
 ```
 
-最终源码以唯一的 `src` 目录为准。之前出现的 `src - 副本` 已不存在，不应再按
-双目录同步流程操作。
+The only authoritative source directory is `src`. The previous backup source
+directory no longer exists, so no dual-directory synchronization is required.
 
-## 最终功能
+## Final Features
 
-- 抽象健康专业人员基类。
-- GP、Specialist、Nurse、Surgeon 四个具体类型。
-- 父类型 `ArrayList`、普通循环和动态绑定。
-- 患者手机号规范化与格式校验。
-- `TimeSlot` 使用小时和分钟建模并按分钟数排序。
-- 模拟当前日为 `MONDAY`。
-- 08:00 到 16:00 的日程，最后可预约槽为 15:30。
-- 16:00 被明确视为关门时间。
-- 同一专业人员同时间冲突检查。
-- 按专业人员 ID 和患者手机号过滤。
-- 全部和过滤子集按时间排序。
-- 手机号单参数取消。
-- 多条手机号预约时返回歧义警告。
-- 手机号加时间的精确取消重载。
-- 专业人员 ID 加时间取消。
-- 患者姓名加时间取消。
-- 正常和错误案例完整演示。
+- Abstract health professional base class.
+- GP, Specialist, Nurse and Surgeon concrete types.
+- Parent-type `ArrayList`, normal iteration and dynamic binding.
+- Patient mobile number normalization and validation.
+- `TimeSlot` based on hour and minute values and ordered by minute of day.
+- Simulated current day set to `MONDAY`.
+- Schedule from 08:00 through 15:30.
+- 16:00 treated as the closing time.
+- Double-booking prevention for the same professional and time.
+- Filtering by professional ID and patient mobile number.
+- Sorting for all appointments and filtered subsets.
+- Phone-only cancellation.
+- Ambiguity warning when a phone number matches multiple appointments.
+- Precise phone-and-time cancellation overload.
+- Professional-ID-and-time cancellation.
+- Patient-name-and-time cancellation.
+- Complete success and error demonstrations.
 
-## 最终验证
+## Final Verification
+
+Compile and run:
 
 ```powershell
 New-Item -ItemType Directory -Force -Path .\build | Out-Null
-javac -Xlint:all -Werror -d .\build (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName })
+javac --release 17 -Xlint:all -Werror -d .\build (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName })
 java -cp .\build AssignmentOne
 ```
 
-契约测试：
+Run contract tests:
 
 ```powershell
-javac -Xlint:all -Werror -d .\build (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName }) .\test\OopContractCheck.java
+javac --release 17 -Xlint:all -Werror -d .\build (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName }) .\test\OopContractCheck.java
 java -cp .\build OopContractCheck
 ```
 
-Javadoc：
+Generate Javadoc:
 
 ```powershell
 javadoc -Xdoclint:all -quiet -d .\build\docs (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName })
 ```
 
-已验证：
+Verified results:
 
-- `javac -Xlint:all -Werror` 通过。
-- 契约测试输出 `CONTRACT CHECK PASSED`。
-- `javadoc -Xdoclint:all` 无警告。
-- 主程序正常和错误路径通过。
-- 最终剩余预约数为 3。
-- 白名单扫描通过。
-- 当前 `src` 没有 `.class` 文件。
+- Java 17 compilation passes with `-Xlint:all -Werror`.
+- Contract tests print `CONTRACT CHECK PASSED`.
+- `javadoc -Xdoclint:all` reports no warnings.
+- The complete normal and error demonstration runs successfully.
+- Three appointments remain at the end of the demonstration.
+- The Module 1-3 whitelist scan passes.
+- `src` contains no `.class` files.
 
-## 视频材料
+## Video Materials
 
 ```text
 presentation/
-|-- output/PROG2004-A1-OOP-Presentation-v4.pptx
+|-- output/PROG2004-A1-OOP-Presentation-v5.pptx
 `-- VIDEO_SCRIPT.md
 ```
 
-PPT 共 9 页，含逐页 speaker notes。`VIDEO_SCRIPT.md` 是约 4 分 55 秒的参考
-口播稿。当前 PPT 已同步 `TimeSlot`、15:30 最后预约槽和手机号取消歧义规则。
+The deck contains nine slides and speaker notes for every slide.
+`VIDEO_SCRIPT.md` contains an English reference script for approximately
+4 minutes and 55 seconds.
 
-## 提交 ZIP
+## Submission ZIP
 
-提交前重新生成：
+Generate:
 
 ```text
-C:\Users\1\Desktop\学习\OOP\A1-mak1noo.zip
+`<workspace>/A1-Guo-Fan.zip`
 ```
 
-ZIP 只应包含：
+The ZIP should contain:
 
-- `src` 中的 11 个 Java 源文件
+- 11 Java source files from `src`
 - `README.md`
 - `DESIGN.md`
 - `HANDOFF.md`
 - `CHANGELOG.md`
 
-不能包含：
+The ZIP must not contain:
 
 - `A1-YinghaoLiu/`
 - `.git/`
 - `.vscode/`
 - `build/`
 - `.codex-finalizer/`
-- `.class`
-- 测试用构建文件
+- `.class` files
+- test build output
 
-## 提交前剩余事项
+## Remaining Submission Tasks
 
-1. 确认 MySCU 用户名与 `mak1noo` 的关系，必要时同步目录、ZIP 和仓库名。
-2. 提交 WakaTime 报告。
-3. 录制不超过 5 分钟的视频并上传到 SCU OneDrive。
-4. 按实际使用情况填写 GenAI declaration。
-5. 如需评阅，邀请 tutor 和 unit assessor 加入私有仓库。
+1. Confirm the MySCU username and match the project, ZIP and repository names.
+2. Submit the WakaTime report.
+3. Record a video no longer than five minutes and upload it to SCU OneDrive.
+4. Complete the GenAI declaration accurately.
+5. Invite the tutor and unit assessor to the private repository if required.
 
-## 学术诚信
+## Academic Integrity
 
-作业 PDF 规定不能使用 GenAI 代写解决方案代码、代码注释或视频内容。提交前应
-确保所有内容符合课程规则、能够独立解释每一行代码，并真实保留 GitHub 与
-WakaTime 记录。
+The assessment brief does not permit GenAI to write the submitted solution
+code, code comments, or video explanation. Before submission, ensure that the
+work follows the course rules, that you can explain every line independently,
+and that the GitHub and WakaTime records are genuine.
