@@ -7,10 +7,22 @@ import java.util.ArrayList;
 public class OopContractCheck {
     public static void main(String[] args) {
         checkScheduleContract();
+        checkWorkingDayNormalization();
         checkPatientNormalization();
         checkAppointmentScheduleValidation();
         checkManagerContracts();
         System.out.println("CONTRACT CHECK PASSED");
+    }
+
+    private static void checkWorkingDayNormalization() {
+        ArrayList<String> mixedCaseDays = new ArrayList<String>();
+        mixedCaseDays.add("Monday");
+        GeneralPractitioner gp = new GeneralPractitioner(
+                "1099", "Case Test", "GP-1099", mixedCaseDays);
+        check("MONDAY".equals(gp.getAvailableDays().get(0)),
+                "Working days must be stored in uppercase.");
+        check(gp.worksOn("MONDAY"),
+                "A mixed-case working day must match the clinic day.");
     }
 
     private static void checkScheduleContract() {

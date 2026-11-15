@@ -3,7 +3,7 @@
 ## Project Structure
 
 ```text
-A1-mak1noo/
+A1-Guo-Fan/
 |-- .gitignore
 |-- CHANGELOG.md
 |-- DESIGN.md
@@ -83,7 +83,7 @@ short English Javadoc comments. Validate the documentation with:
 javadoc -Xdoclint:all -quiet -d .\build\docs (Get-ChildItem -LiteralPath .\src -Filter *.java | ForEach-Object { $_.FullName })
 ```
 
-## Private Repository
+## GitHub Repository
 
 ```text
 https://github.com/mak1noo/A1-Guo-Fan

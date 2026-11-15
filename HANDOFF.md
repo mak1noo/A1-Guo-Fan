@@ -4,9 +4,9 @@ Last updated: 2026-11-15
 
 ## Current State
 
-Project directory: `<workspace>/A1-mak1noo`
+Project directory: `<workspace>/A1-Guo-Fan`
 
-Private GitHub repository:
+Public GitHub repository:
 
 ```text
 https://github.com/mak1noo/A1-Guo-Fan
@@ -112,7 +112,7 @@ The ZIP must not contain:
 2. Submit the WakaTime report.
 3. Record a video no longer than five minutes and upload it to SCU OneDrive.
 4. Complete the GenAI declaration accurately.
-5. Invite the tutor and unit assessor to the private repository if required.
+5. Confirm the public repository sharing details required by the tutor.
 
 ## Academic Integrity
 

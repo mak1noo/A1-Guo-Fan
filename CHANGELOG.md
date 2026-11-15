@@ -3,6 +3,9 @@
 ## 2026-11-15
 
 - Moved the project to `mak1noo/A1-Guo-Fan`.
+- Unified the local project directory and documentation names as `A1-Guo-Fan`.
+- Confirmed that the GitHub repository is public and updated the documentation.
+- Fixed mixed-case working days by storing and comparing uppercase values.
 - Added a `TimeSlot` value object based on hour and minute.
 - Changed appointment ordering to use minute of day.
 - Defined 08:00 through 15:30 as bookable slots.

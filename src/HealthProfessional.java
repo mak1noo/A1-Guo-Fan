@@ -30,12 +30,12 @@ public abstract class HealthProfessional implements Comparable<HealthProfessiona
             if (day == null) {
                 throw new IllegalArgumentException("Available days cannot contain null.");
             }
-            String trimmedDay = day.trim();
-            if (!ClinicSchedule.isValidDay(trimmedDay)) {
+            String normalizedDay = day.trim().toUpperCase();
+            if (!ClinicSchedule.isValidDay(normalizedDay)) {
                 throw new IllegalArgumentException("Invalid working day: " + day);
             }
-            if (!this.availableDays.contains(trimmedDay)) {
-                this.availableDays.add(trimmedDay);
+            if (!this.availableDays.contains(normalizedDay)) {
+                this.availableDays.add(normalizedDay);
             }
         }
     }
@@ -84,7 +84,7 @@ public abstract class HealthProfessional implements Comparable<HealthProfessiona
      * @return true when the professional works that day
      */
     public final boolean worksOn(String day) {
-        return day != null && availableDays.contains(day.trim());
+        return day != null && availableDays.contains(day.trim().toUpperCase());
     }
 
     /**
