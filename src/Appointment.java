@@ -19,9 +19,9 @@ public class Appointment implements Comparable<Appointment> {
             throw new IllegalArgumentException(
                     "Patient, health professional, and time slot are required.");
         }
-        if (!ClinicSchedule.isScheduledSlot(timeSlot)) {
+        if (!ClinicSchedule.isWithinOpeningHours(timeSlot)) {
             throw new IllegalArgumentException(
-                    "The selected time is not in the clinic schedule.");
+                    "The selected time is outside the clinic's opening hours.");
         }
 
         this.patient = patient;

@@ -81,6 +81,21 @@ public final class ClinicSchedule {
         return timeSlot != null && DAILY_SLOTS.contains(timeSlot);
     }
 
+    /**
+     * Checks whether a time falls inside the clinic's opening hours.
+     * The opening time is inclusive and the closing time is exclusive.
+     *
+     * @param timeSlot the time to validate
+     * @return true when the time is a valid half-hour time before closing
+     */
+    public static boolean isWithinOpeningHours(TimeSlot timeSlot) {
+        if (timeSlot == null) {
+            return false;
+        }
+        int minuteOfDay = timeSlot.getMinuteOfDay();
+        return minuteOfDay >= START_MINUTES && minuteOfDay < END_MINUTES;
+    }
+
     private static ArrayList<String> createValidDays() {
         ArrayList<String> days = new ArrayList<String>();
         days.add(MONDAY);

@@ -95,7 +95,7 @@ public class AssignmentOne {
         AppointmentManager manager = new AppointmentManager();
         printHeading("PART 6 - CURRENT CLINIC DAY AND SCHEDULE");
         System.out.println("Clinic day: " + manager.getClinicDay());
-        System.out.println("Daily schedule: " + ClinicSchedule.getDailySlots());
+        System.out.println("Daily schedule: " + manager.getSchedule());
 
         printHeading("PART 6 - CREATE APPOINTMENTS");
         System.out.println(manager.addAppointment(
@@ -133,6 +133,19 @@ public class AssignmentOne {
         System.out.println(manager.cancelAppointment(
                 "Zoe Taylor", new TimeSlot(10, 0)));
         manager.displayAll();
+
+        printHeading("PART 6 - CONFIGURABLE SCHEDULE");
+        ArrayList<TimeSlot> customSchedule = new ArrayList<TimeSlot>();
+        customSchedule.add(new TimeSlot(9, 0));
+        customSchedule.add(new TimeSlot(11, 0));
+        customSchedule.add(new TimeSlot(14, 30));
+        AppointmentManager customManager =
+                new AppointmentManager(customSchedule);
+        System.out.println("Custom schedule: " + customManager.getSchedule());
+        System.out.println(customManager.addAppointment(
+                patientAva, gpAlice, new TimeSlot(9, 0)));
+        System.out.println(customManager.addAppointment(
+                patientAva, gpAlice, new TimeSlot(10, 0)));
 
         printHeading("PART 6 - ERROR CASE: DOUBLE BOOKING");
         System.out.println(manager.addAppointment(

@@ -6,13 +6,14 @@ import java.util.Collections;
  */
 public class AppointmentManager {
     private final ArrayList<Appointment> appointments;
+    private final ArrayList<TimeSlot> schedule;
     private final String clinicDay;
 
     /**
      * Creates a manager for the simulated current day.
      */
     public AppointmentManager() {
-        this(ClinicSchedule.getCurrentDay());
+        this(ClinicSchedule.getCurrentDay(), ClinicSchedule.getDailySlots());
     }
 
     /**
@@ -21,6 +22,25 @@ public class AppointmentManager {
      * @param clinicDay the requested clinic day
      */
     public AppointmentManager(String clinicDay) {
+        this(clinicDay, ClinicSchedule.getDailySlots());
+    }
+
+    /**
+     * Creates a current-day manager with a custom clinic schedule.
+     *
+     * @param schedule the configured time slots for the current day
+     */
+    public AppointmentManager(ArrayList<TimeSlot> schedule) {
+        this(ClinicSchedule.getCurrentDay(), schedule);
+    }
+
+    /**
+     * Creates a manager with a custom schedule for the simulated current day.
+     *
+     * @param clinicDay the requested clinic day
+     * @param schedule the configured time slots for the current day
+     */
+    public AppointmentManager(String clinicDay, ArrayList<TimeSlot> schedule) {
         if (!ClinicSchedule.isValidDay(clinicDay)) {
             throw new IllegalArgumentException("A valid clinic day is required.");
         }
@@ -30,6 +50,7 @@ public class AppointmentManager {
         }
 
         this.clinicDay = ClinicSchedule.getCurrentDay();
+        this.schedule = copyAndValidateSchedule(schedule);
         this.appointments = new ArrayList<Appointment>();
     }
 
@@ -40,6 +61,15 @@ public class AppointmentManager {
      */
     public String getClinicDay() {
         return clinicDay;
+    }
+
+    /**
+     * Returns a defensive copy of the configured clinic schedule.
+     *
+     * @return the manager's ordered clinic time slots
+     */
+    public ArrayList<TimeSlot> getSchedule() {
+        return new ArrayList<TimeSlot>(schedule);
     }
 
     /**
@@ -73,7 +103,7 @@ public class AppointmentManager {
         if (patient == null || professional == null || timeSlot == null) {
             return "Booking failed: patient, health professional, and time slot are required.";
         }
-        if (!ClinicSchedule.isScheduledSlot(timeSlot)) {
+        if (!schedule.contains(timeSlot)) {
             return "Booking failed: " + timeSlot + " is not in the daily schedule.";
         }
         if (!professional.worksOn(clinicDay)) {
@@ -302,6 +332,34 @@ public class AppointmentManager {
             }
         }
         return matches;
+    }
+
+    private static ArrayList<TimeSlot> copyAndValidateSchedule(
+            ArrayList<TimeSlot> suppliedSchedule) {
+        if (suppliedSchedule == null || suppliedSchedule.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "The daily schedule must contain at least one time slot.");
+        }
+
+        ArrayList<TimeSlot> validatedSchedule = new ArrayList<TimeSlot>();
+        for (int i = 0; i < suppliedSchedule.size(); i++) {
+            TimeSlot timeSlot = suppliedSchedule.get(i);
+            if (timeSlot == null) {
+                throw new IllegalArgumentException(
+                        "The daily schedule cannot contain null.");
+            }
+            if (!ClinicSchedule.isWithinOpeningHours(timeSlot)) {
+                throw new IllegalArgumentException(
+                        "Every schedule time must be inside clinic opening hours.");
+            }
+            if (validatedSchedule.contains(timeSlot)) {
+                throw new IllegalArgumentException(
+                        "The daily schedule cannot contain duplicate times.");
+            }
+            validatedSchedule.add(timeSlot);
+        }
+        Collections.sort(validatedSchedule);
+        return validatedSchedule;
     }
 
     private ArrayList<Appointment> findAppointmentsByPhone(String mobile) {

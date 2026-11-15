@@ -10,8 +10,57 @@ public class OopContractCheck {
         checkWorkingDayNormalization();
         checkPatientNormalization();
         checkAppointmentScheduleValidation();
+        checkConfigurableSchedule();
         checkManagerContracts();
         System.out.println("CONTRACT CHECK PASSED");
+    }
+
+    private static void checkConfigurableSchedule() {
+        ArrayList<TimeSlot> customSchedule = new ArrayList<TimeSlot>();
+        customSchedule.add(new TimeSlot(9, 0));
+        customSchedule.add(new TimeSlot(11, 0));
+        customSchedule.add(new TimeSlot(14, 30));
+
+        AppointmentManager manager = new AppointmentManager(customSchedule);
+        check(manager.getSchedule().size() == 3,
+                "A custom schedule must retain three configured slots.");
+
+        ArrayList<TimeSlot> exposedSchedule = manager.getSchedule();
+        exposedSchedule.clear();
+        check(manager.getSchedule().size() == 3,
+                "The schedule getter must return a defensive copy.");
+
+        GeneralPractitioner gp = new GeneralPractitioner(
+                "1100", "Schedule Test", "GP-1100");
+        Patient patient = new Patient("Custom Schedule", "0400111222");
+        check(manager.addAppointment(patient, gp, new TimeSlot(9, 0))
+                .startsWith("SUCCESS"),
+                "A configured custom time must accept a booking.");
+        check(manager.addAppointment(patient, gp, new TimeSlot(10, 0))
+                .startsWith("Booking failed"),
+                "A time outside the custom schedule must be rejected.");
+
+        ArrayList<TimeSlot> duplicateSchedule = new ArrayList<TimeSlot>();
+        duplicateSchedule.add(new TimeSlot(9, 0));
+        duplicateSchedule.add(new TimeSlot(9, 0));
+        boolean duplicateRejected = false;
+        try {
+            new AppointmentManager(duplicateSchedule);
+        } catch (IllegalArgumentException exception) {
+            duplicateRejected = true;
+        }
+        check(duplicateRejected, "Duplicate custom schedule slots must be rejected.");
+
+        ArrayList<TimeSlot> closingTimeSchedule = new ArrayList<TimeSlot>();
+        closingTimeSchedule.add(new TimeSlot(16, 0));
+        boolean closingTimeRejected = false;
+        try {
+            new AppointmentManager(closingTimeSchedule);
+        } catch (IllegalArgumentException exception) {
+            closingTimeRejected = true;
+        }
+        check(closingTimeRejected,
+                "A custom schedule cannot start at the closing time.");
     }
 
     private static void checkWorkingDayNormalization() {
